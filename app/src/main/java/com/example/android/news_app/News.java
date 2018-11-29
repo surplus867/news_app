@@ -29,17 +29,11 @@ public class News {
         return mAuthor;
     }
 
-    public void setAuthor(String author) {
-        mAuthor = author;
-    }
 
     public String getUrl() {
         return mUrl;
     }
 
-    public void setUrl(String url) {
-        mUrl = url;
-    }
 
     public String getDate() {
         return mDate;
@@ -52,7 +46,5 @@ public class News {
         return mSection;
     }
 
-    public void setSection(String section) {
-        mSection = section;
-    }
+
 }

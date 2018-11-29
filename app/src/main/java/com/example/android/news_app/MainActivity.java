@@ -1,48 +1,47 @@
 package com.example.android.news_app;
 
 import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<News>> {
+public class MainActivity extends AppCompatActivity implements LoaderCallbacks<List<News>> {
 
     //Loader ID
     private static final int NEWS_LOADER_ID = 1;
     //URL declaration
-    private static final String GUARDIAN_REQUEST_URL =
-            "http://content.guardianapis.com/search?q=debates&api-key=test";
+    private static final String REQUEST_URL =
+            "http://content.guardianapis.com/search?";
 
     NewsAdapter mAdapter;
     TextView mTextView;
-    ProgressBar mProgressBar;
-    //ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //Find a reference to the {@link ListView} in the layout
         ListView newsListView = (ListView) findViewById(R.id.list_view);
 
         mTextView = (TextView) findViewById(R.id.text_view);
         newsListView.setEmptyView(mTextView);
-
+        // Create a new adapter that takes an empty list of news as input
         mAdapter = new NewsAdapter(this, new ArrayList<News>());
-
+        // Update List View with mAdapter
         newsListView.setAdapter(mAdapter);
 
         newsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -63,14 +62,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
-        ConnectivityManager manager = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 
-        if (networkInfo != null && networkInfo.isConnected()){
+        if (networkInfo != null && networkInfo.isConnected()) {
             LoaderManager loaderManager = getLoaderManager();
-            loaderManager.initLoader(NEWS_LOADER_ID,null,this);
-        }else {
-            mProgressBar.setVisibility(View.GONE);
+            loaderManager.initLoader(NEWS_LOADER_ID, null, this);
+        } else {
+            View loadingIndicator = findViewById(R.id.loading_indicator);
+            loadingIndicator.setVisibility(View.GONE);
             mTextView.setText(R.string.no_internet_connection);
 
         }
@@ -79,16 +79,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
-        return new NewsLoader(this,GUARDIAN_REQUEST_URL);
+
+
+        Uri baseUri = Uri.parse(REQUEST_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        uriBuilder.appendQueryParameter("api-key", "test");
+        uriBuilder.appendQueryParameter("show-references", "author");
+        uriBuilder.appendQueryParameter("show-tags", "contributor");
+        uriBuilder.appendQueryParameter("q", "Android");
+        uriBuilder.appendQueryParameter("order-by", "newest");
+
+        return new NewsLoader(this, uriBuilder.toString());
+
     }
 
     @Override
-    public void onLoadFinished(Loader<List<News>> loader, List<News> data) {
-        mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
-        mProgressBar.setVisibility(View.GONE);
+    public void onLoadFinished(Loader<List<News>> loader, List<News> news) {
+        // Hide loading indicator because the data has been loaded
+        View loadingIndicator = findViewById(R.id.loading_indicator);
+        loadingIndicator.setVisibility(View.GONE);
+        // Set empty state text to display "No news found."
+        mTextView.setText(R.string.no_news_found);
+        // Clear mAdapter
+        mAdapter.notifyDataSetChanged();
 
-        if(data != null);
-        mAdapter.addAll(data);
+        if (news != null && !news.isEmpty()) {
+            mAdapter.addAll(news);
+        }
     }
 
     @Override

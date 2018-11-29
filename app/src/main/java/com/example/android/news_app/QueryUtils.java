@@ -1,23 +1,22 @@
 package com.example.android.news_app;
 
-         import android.text.TextUtils;
-         import android.util.Log;
-         import android.widget.ListView;
+import android.text.TextUtils;
+import android.util.Log;
 
-         import org.json.JSONArray;
-         import org.json.JSONException;
-         import org.json.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-         import java.io.BufferedReader;
-         import java.io.IOException;
-         import java.io.InputStream;
-         import java.io.InputStreamReader;
-         import java.net.HttpURLConnection;
-         import java.net.MalformedURLException;
-         import java.net.URL;
-         import java.nio.charset.Charset;
-         import java.util.ArrayList;
-         import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QueryUtils {
 
@@ -135,15 +134,14 @@ public class QueryUtils {
                 String date = currentNews.getString("webPublicationDate");
                 String section = currentNews.getString("sectionName");
                 String webUrl = currentNews.getString("webUrl");
-
-                //Declare string variable to hold author name
-                String authorName ="";
                 JSONArray tagsArray = currentNews.getJSONArray("tags");
 
-                if (tagsArray.length() == 1) {
-                    JSONObject firstTagsItem = tagsArray.getJSONObject(0);
+                String authorName ="";
+                if (tagsArray.length() != 0) {
+
+                    JSONObject tagsItem = tagsArray.getJSONObject(0);
                     // Extract the value for the key called "webTitle"
-                    authorName = firstTagsItem.getString("webTitle");
+                    authorName = tagsItem.getString("webTitle");
                 }
 
                 News news = new News(title,authorName,webUrl,date,section);

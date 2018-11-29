@@ -67,7 +67,7 @@ public class NewsAdapter extends BaseAdapter {
         return view;
     }
 
-    public void addAll(List<News> newsList) {
+   public void addAll(List<News> newsList) {
         mNews.addAll(newsList);
         notifyDataSetChanged();
     }
