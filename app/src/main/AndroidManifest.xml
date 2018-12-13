@@ -17,6 +17,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/action_settings"
+            android:screenOrientation="portrait">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.android.news_app.MainActivity" />
+    </activity>
+</application>
 
-</manifest>
+    </manifest>
