@@ -134,4 +134,3 @@ public class MainActivity extends AppCompatActivity implements LoaderCallbacks<L
         return super.onOptionsItemSelected(item);
     }
 }
-
